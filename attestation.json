@@ -1,0 +1,9 @@
+{
+  "pluginId": "neobase.aquarium",
+  "repo": "NDesumeur/neobase-plugin-aquarium",
+  "version": "1.0.1",
+  "sha256": "dd3cbffe13aec475bf08608cb380e976ca444bf00b2384dc8c963afd44cfd1a3",
+  "approvedAt": "2026-10-31T17:51:20.926Z",
+  "neobase": ">=4.0.0",
+  "signature": "AB70H/01BWDRldhK2hVal+tRAenHW4kp2c1lF3l+ADU6/4hX4/FBLC0j3shwVDEtKF3OZo/8cAMeSgD+0OLQAQ=="
+}
