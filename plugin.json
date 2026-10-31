@@ -1,0 +1,21 @@
+{
+  "id": "neobase.aquarium",
+  "name": "Aquarium",
+  "version": "1.0.0",
+  "author": "NDesumeur",
+  "description": "Garde en vie les poissons attrapés à la Pêche : bassins, nourriture, décors et visiteurs qui rapportent des pièces.",
+  "icon": "icon.png",
+  "entry": "index.js",
+  "view": "aquarium",
+  "neobase": ">=4.0.0",
+  "type": "app",
+  "category": "Jeux",
+  "mobile": false,
+  "system": false,
+  "dependencies": {
+    "neobase.peche": ">=1.0.0"
+  },
+  "permissions": [
+    "full"
+  ]
+}
