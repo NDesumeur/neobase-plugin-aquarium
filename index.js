@@ -192,7 +192,32 @@ Requin-lutin|A|*|*|4|200-400|s|eaa,fcc,c88|-|k
 Poisson-tripode|A|*|*|2|20-35|g|776,998,665|-|g
 Pieuvre Dumbo|A|*|*|3|10-30|c|f9b,fcd,f9b|-|g
 Kraken|A|N|P|5|800-1500|c|a34,e78,f6a|n|k
-Poisson-NeoBase|A|N|*|5|50-80|f|e1c,fff,7fe|n|g`;
+Poisson-NeoBase|A|N|*|5|50-80|f|e1c,fff,7fe|n|g
+Vairon|ER|J|*|1|6-12|f|9a8,dde,c66|-|pa
+Goujon|R|J|*|1|8-15|g|987,cca,ba6|-|pa
+Épinoche|EL|J|*|1|4-8|f|7a5,cd9,e63|-|pv
+Truite arc-en-ciel|RL|J|S|3|25-70|f|8a9,fdd,f5a|-|pa
+Omble chevalier|L|A|*|3|25-60|f|576,fb8,f64|-|pa
+Silure géant|EL|N|*|4|100-250|l|665,aa8,886|-|k
+Esturgeon|RL|*|*|4|100-300|g|678,ccd,99a|d|g
+Maquereau|C|J|*|1|20-40|f|58c,cde,9bd|-|pa
+Sardine|CT|J|*|1|12-22|f|7ac,eef,bce|-|pa
+Bar commun|C|A|*|2|30-90|f|99a,dde,aab|-|pv
+Dorade royale|CT|J|*|2|25-60|h|9aa,eed,fc4|-|pv
+Rouget barbet|CT|J|*|2|15-35|f|e66,fcb,f87|-|pv
+Raie pastenague|C|*|*|3|40-150|r|987,ddb,765|-|g
+Poisson-clown|T|J|S|2|6-12|h|f84,fff,fa4|s|pa
+Poisson-ange royal|T|J|*|3|15-40|y|48f,fd4,4cf|s|pa
+Poisson-perroquet|T|J|*|3|30-80|h|4cb,fa6,6df|-|pv
+Raie manta|T|*|*|4|200-500|x|445,eee,667|-|g
+Thon rouge|CT|*|*|4|100-250|f|358,cde,a44|-|k
+Espadon|CT|A|S|4|150-350|e|568,dde,445|-|k
+Phoque-poisson givré|B|*|N|3|40-90|h|9bd,eef,cff|-|g
+Morue arctique|B|*|*|2|40-100|g|987,eed,775|-|pv
+Lompe des glaces|B|N|*|3|10-30|h|9ac,def,6bd|-|pv
+Anguille lanterne|A|N|*|3|40-120|l|235,5f9,4fa|n|k
+Baudroie fantôme|A|N|*|4|40-120|c|333,a6c,f9f|n|k
+Poisson-hache cristal|A|*|*|3|8-20|y|79c,cff,9ef|n|pv`;
 const FI_SPOTS = {
   E: {name: 'Étang des saules', price: 0, water: ['#3d6e7a', '#244a58', '#102632'], sky: 1, shore: 'wood', decor: 'saules', weather: {clair: 4, nuageux: 3, pluie: 2, orage: .5, brouillard: 1}},
   R: {name: 'Rivière claire', price: 600, water: ['#4a8a96', '#2b6070', '#14343f'], shore: 'wood', decor: 'collines', flow: true, weather: {clair: 4, nuageux: 3, pluie: 2.5, orage: .6, brouillard: 1}},
@@ -433,10 +458,11 @@ function aqUpdate() {
   // each fish swims towards a target, and to the food when there is some
   for (const f of aqTank().fish) {
     const sw = aq.swim[f.k] ??= {x: 40 + Math.random() * 300, y: 40 + Math.random() * 120, tx: 0, ty: 0, dir: 1, wait: 0};
-    const food = aq.flakes.find(fl => Math.abs(fl.x - sw.x) < 120);
-    if (food) { sw.tx = food.x; sw.ty = food.y; if (Math.hypot(food.x - sw.x, food.y - sw.y) < 6) aq.flakes.splice(aq.flakes.indexOf(food), 1); }
+    if (!sw.food || !aq.flakes.includes(sw.food)) { const near = aq.flakes.filter(fl => Math.abs(fl.x - sw.x) < 170); sw.food = near.length ? near[Math.floor(Math.random() * near.length)] : null; sw.sp ??= .6 + Math.random() * .6; sw.off = (Math.random() - .5) * 14; }
+    const food = sw.food;
+    if (food) { sw.tx = food.x + sw.off; sw.ty = food.y; if (Math.hypot(food.x - sw.x, food.y - sw.y) < 6) { aq.flakes.splice(aq.flakes.indexOf(food), 1); sw.food = null; sw.wait = 0; } }
     else if (--sw.wait <= 0 || Math.hypot(sw.tx - sw.x, sw.ty - sw.y) < 3) { sw.tx = 30 + Math.random() * (AQA.W - 60); sw.ty = 30 + Math.random() * (AQA.SAND - 70); sw.wait = 200 + Math.random() * 300; }
-    const sp = (food ? .9 : .35) * (aqHappy(aqTank()) < 30 ? .5 : 1), dx = sw.tx - sw.x, dy = sw.ty - sw.y, d = Math.hypot(dx, dy) || 1;
+    const sp = (food ? .9 * (sw.sp || 1) : .35) * (aqHappy(aqTank()) < 30 ? .5 : 1), dx = sw.tx - sw.x, dy = sw.ty - sw.y, d = Math.hypot(dx, dy) || 1;
     sw.x += dx / d * Math.min(sp, d); sw.y += dy / d * Math.min(sp * .6, d); if (Math.abs(dx) > 2) sw.dir = dx > 0 ? 1 : -1;
   }
 }
@@ -454,6 +480,8 @@ function aqDraw() {
   for (let y = 0; y < H; y += 4) { px(g, mixc(water[0], water[2], y / H), 0, y, W, 4); }
   for (let i = 0; i < 6; i++) { g.fillStyle = 'rgba(255,255,255,.04)'; g.beginPath(); const x = (i * 83 + t / 6) % (W + 80) - 40; g.moveTo(x, 0); g.lineTo(x + 24, 0); g.lineTo(x - 30, AQA.SAND); g.lineTo(x - 44, AQA.SAND); g.fill(); }  // light rays
   px(g, '#c9b47a', 0, AQA.SAND, W, H - AQA.SAND); for (let x = 0; x < W; x += 7) px(g, '#a8935a', x, AQA.SAND + 3 + (x * 5) % 12, 3, 1);
+  for (let i = 0; i < 9; i++) { const bx = 14 + i * 44 + (i % 3) * 7, len = 18 + (i * 11) % 26; for (let j = 0; j < len; j += 2) px(g, mixc(i % 2 ? '#2f7a4a' : '#3a8f5c', water[2], j / len * .5 + .2), bx + Math.round(Math.sin((t / 40) + i + j / 6) * (1 + j / 10)), AQA.SAND - j, 2, 2); }
+  for (let i = 0; i < 22; i++) { const gx = (i * 37) % W; px(g, ['#8f7a4a', '#d8c48a', '#6f6a58'][i % 3], gx, AQA.SAND + 6 + (i * 5) % (H - AQA.SAND - 8), 3 + i % 3, 2); }
   tank.decor.forEach((d, i) => AQ_DECOR[d](g, 18 + i * 92 + (i % 2) * 20, t));
   for (const f of aq.flakes) px(g, '#e8b070', f.x, f.y, 2, 2);
   for (const f of tank.fish) {
