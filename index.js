@@ -1,7 +1,7 @@
 // Aquarium : ton appli d'origine (HTML et code inchangés), livrée en plugin.
-// Ses données sont dans le dossier du plugin, que NeoBase sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoBase.
-// Elle tourne dans le bac à sable de NeoBase, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
-const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Aquarium</span><span class=\"hint\" id=\"aqInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"aqTank\" title=\"Bassin\"></select><button class=\"btn px\" id=\"aqFeed\">NOURRIR</button><button class=\"btn px\" id=\"aqClean\">NETTOYER</button><button class=\"btn main px\" id=\"aqCash\" title=\"Les pièces des visiteurs vont dans ta bourse de Pêche\">ENCAISSER</button></div></div>\n      <div class=\"gameBox g169\"><canvas id=\"aqCanvas\" width=\"384\" height=\"216\"></canvas></div>\n      <div class=\"aqPanel\" id=\"aqPanel\"></div>\n      <div class=\"hint\">Chaque poisson pêché dans Pêche arrive vivant dans le vivier (et ta première visite y met un poisson de chaque espèce déjà dans ta collection). Mets-les dans un bassin de leur eau : douce (étang, rivière, lac), mer, tropicale, polaire ou abysses ; les gros poissons veulent un grand bassin. Ils ont faim et l'eau se salit, même quand NeoBase est fermé : nourris, nettoie, ou installe un distributeur et un filtre. Les poissons heureux attirent des visiteurs : encaisse leurs pièces, elles vont dans ta bourse de Pêche, qui paie aussi les bassins, les améliorations et les décors. Clic sur un poisson : son nom. Sauvegardé et synchronisé.</div>\n    </div>";
+// Ses données sont dans le dossier du plugin, que NeoDex sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoDex.
+// Elle tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
+const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\"label\">Aquarium</span><span class=\"hint\" id=\"aqInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"aqTank\" title=\"Bassin\"></select><button class=\"btn px\" id=\"aqFeed\">NOURRIR</button><button class=\"btn px\" id=\"aqClean\">NETTOYER</button><button class=\"btn main px\" id=\"aqCash\" title=\"Les pièces des visiteurs vont dans ta bourse de Pêche\">ENCAISSER</button></div></div>\n      <div class=\"gameBox g169\"><canvas id=\"aqCanvas\" width=\"384\" height=\"216\"></canvas></div>\n      <div class=\"aqPanel\" id=\"aqPanel\"></div>\n      <div class=\"hint\">Chaque poisson pêché dans Pêche arrive vivant dans le vivier (et ta première visite y met un poisson de chaque espèce déjà dans ta collection). Mets-les dans un bassin de leur eau : douce (étang, rivière, lac), mer, tropicale, polaire ou abysses ; les gros poissons veulent un grand bassin. Ils ont faim et l'eau se salit, même quand NeoDex est fermé : nourris, nettoie, ou installe un distributeur et un filtre. Les poissons heureux attirent des visiteurs : encaisse leurs pièces, elles vont dans ta bourse de Pêche, qui paie aussi les bassins, les améliorations et les décors. Clic sur un poisson : son nom. Sauvegardé et synchronisé.</div>\n    </div>";
 /*CSS-MOVED*/ const CSS = `.gameBox{display:grid;place-items:center;padding:10px;background:#05010b;box-shadow:0 0 0 3px var(--line2)}
 .aqPanel{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px;align-items:start}
 .aqCol{max-height:440px;overflow:auto;gap:6px}
@@ -15,10 +15,10 @@ const HTML = "<div class=\"appWrap\">\n      <div class=\"agHead\"><span class=\
 .gameBox.tall canvas{width:auto;height:min(720px,72vh);aspect-ratio:240/320}
 .gSel{width:auto;font-size:14px;padding:6px 10px;margin-right:8px}
 .gameBox.g169 canvas{aspect-ratio:384/216;width:min(100%,calc((100vh - 250px) * 1.777))}
-`;  // le style de ce plugin (il utilise les variables du thème de NeoBase)
+`;  // le style de ce plugin (il utilise les variables du thème de NeoDex)
 export default async function (ctx) {
   const view = ctx.view;
-  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoBase pour s'ouvrir."; return; }
+  if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoDex pour s'ouvrir."; return; }
   const host = ctx.host, { el, toast, sfx, ask, newTab, pixIcon, PIX, WX } = host;
   const folder = ctx.folder, legacy = ctx.legacy || {};
   ctx.host.addStyle(CSS);
@@ -26,7 +26,7 @@ export default async function (ctx) {
   const $ = id => id === "aquaApp" ? view : (view.querySelector('#' + id) || document.getElementById(id));  // les identifiants de ta vue d'abord, puis ceux de la page (fenêtres, menus)
   const doc = async n => { try { return await gf.read(n); } catch { return null; } };
   const __icon = () => ctx.icon;  // l'icône de ce plugin
-  const gf = { read: n => neo.pluginFolder("neobase.peche", 'read', n), write: (n, d) => neo.pluginFolder("neobase.peche", 'write', n, d) };  // la sauvegarde est dans le dossier de la Pêche
+  const gf = { read: n => neo.pluginFolder("neodex.peche", 'read', n), write: (n, d) => neo.pluginFolder("neodex.peche", 'write', n, d) };  // la sauvegarde est dans le dossier de la Pêche
   const LEGACY_GAMES = {"top":["fish","aquarium"],"best":"^$"};
   let games = await doc('games');
   if (games == null) {  // première ouverture : tu retrouves tes records et tes parties d'avant
@@ -61,7 +61,7 @@ function sprite(g, rows, x, y, pal) { rows.forEach((r, j) => { for (let i = 0; i
   // ---- ton code d'origine ----
 const seeded = s => () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 
-/* NeoBase games, part 5: Pêche. 7 places, 128 species drawn by code in pixel art, day / night and weather, rods and baits, a collection.
+/* NeoDex games, part 5: Pêche. 7 places, 128 species drawn by code in pixel art, day / night and weather, rods and baits, a collection.
    The whole game (money, gear, places, collection, clock) is saved in games.fish, so it follows you between PCs. */
 
 /* name | places | time (J day, A dawn & dusk, N night, * any) | weather (* any, P rain or storm, S clear, N snow) | rarity 1-5 | size cm | shape | back, belly, fins | pattern | baits it likes */
@@ -192,7 +192,7 @@ Requin-lutin|A|*|*|4|200-400|s|eaa,fcc,c88|-|k
 Poisson-tripode|A|*|*|2|20-35|g|776,998,665|-|g
 Pieuvre Dumbo|A|*|*|3|10-30|c|f9b,fcd,f9b|-|g
 Kraken|A|N|P|5|800-1500|c|a34,e78,f6a|n|k
-Poisson-NeoBase|A|N|*|5|50-80|f|e1c,fff,7fe|n|g
+Poisson-NeoDex|A|N|*|5|50-80|f|e1c,fff,7fe|n|g
 Vairon|ER|J|*|1|6-12|f|9a8,dde,c66|-|pa
 Goujon|R|J|*|1|8-15|g|987,cca,ba6|-|pa
 Épinoche|EL|J|*|1|4-8|f|7a5,cd9,e63|-|pv
@@ -403,7 +403,7 @@ const fmtAway = s => s < 3600 ? Math.round(s / 60) + ' min' : s < 86400 ? Math.f
 
 /* ---------- jeu "Aquarium": keep alive the fish caught in Pêche. Every catch also goes, alive, to the holding pool (the first visit brings one
    of each species already in the collection). Tanks of 5 waters (fresh, sea, tropical, polar, abyss) hold the fish of their places; they get
-   hungry and the water gets dirty, also while NeoBase is closed. Happy fish bring visitors: the ticket money goes to the Pêche purse, which
+   hungry and the water gets dirty, also while NeoDex is closed. Happy fish bring visitors: the ticket money goes to the Pêche purse, which
    also pays for the tanks, filters, feeders and decorations. Saved in games.aquarium (synced). ---------- */
 const AQA = {W: 384, H: 216, SAND: 196,
   waters: {douce: ['Eau douce', 'ERL', 'E'], mer: ['Mer', 'C', 'C'], tropical: ['Tropical', 'T', 'T'], polaire: ['Polaire', 'B', 'B'], abysses: ['Abysses', 'A', 'A']},  // name, places, colours of
@@ -448,7 +448,7 @@ function aqOpen() {
   aqTick();
   if (away > 600 && s.cash - c0 >= 1) toast('Pendant ton absence (' + fmtAway(away) + '), les visiteurs ont laissé ' + Math.floor(s.cash - c0) + ' pièces à la caisse');
   aq ??= {raf: 0, g: $('aqCanvas').getContext('2d'), tick: 0, tank: 0, swim: {}, bubbles: [], flakes: [], sel: null};
-  aq.mode = 'play'; saveGames(); aqUi(); gameLoop(aq, 'neodyme:aquarium', aqUpdate, aqDraw);
+  aq.mode = 'play'; saveGames(); aqUi(); gameLoop(aq, 'neodex:aquarium', aqUpdate, aqDraw);
 }
 function aqUpdate() {
   if (aq.tick % 600 === 0) { aqTick(); aqUi(true); if (aq.tick % 3600 === 0) saveGames(); }

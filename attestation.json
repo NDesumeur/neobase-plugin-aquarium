@@ -1,6 +1,6 @@
 {
-  "pluginId": "neobase.aquarium",
-  "repo": "NDesumeur/neobase-plugin-aquarium",
+  "pluginId": "neodex.aquarium",
+  "repo": "NDesumeur/neodex-plugin-aquarium",
   "version": "1.1.0",
   "sha256": "86a92b84ea01610a971161b66d5b2abb6e5d934ad8fec79e6491372a3a99ab00",
   "approvedAt": "2026-10-31T22:44:06.007Z",
