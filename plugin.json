@@ -1,7 +1,7 @@
 {
   "id": "neodex.aquarium",
   "name": "Aquarium",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "NDesumeur",
   "description": "Garde en vie les poissons attrapés à la Pêche : bassins, nourriture, décors et visiteurs qui rapportent des pièces.",
   "icon": "icon.png",
